@@ -1,14 +1,26 @@
 <template>
-  <div class="win">
-    <div class="win-head">
-      <div class="win-title">Login form</div>
-    </div>
-    <div>
-      <input type="text">
-      <input type="password">
-      <button>Login</button>
-    </div>
-  </div> 
+  <div class="parent">
+    <div class="win">
+      <div class="win-head">
+        <div class="win-title">Login form</div>
+      </div>
+      <div>
+        <div class="form-control">
+          <input type="text" id="email" v-model="email" required autocomplete = "off">
+          <label for="email">Email</label>
+          <div>{{validateEmail}}</div> 
+        </div>
+        <div class="form-control">
+          <input type="password" id="password" v-model="password" required autocomplete = "off">
+          <label for="password">Password</label>
+          <div>{{validatePassword}}</div>
+        </div>
+        <div>  
+          <button @click="submit">Login</button>
+        </div>  
+      </div>
+    </div> 
+  </div>  
 </template> 
 
 <script>
@@ -17,14 +29,63 @@
       return {
         email: '',
         password: '',
-        valid: fasle
+        valid: false,
+        emailRules: [
+          v => !!v || 'E-mail is required',
+          v => /.+@.+/.test(v) || 'E-mail must be valid'
+        ],
+        passwordRules: [
+          v => !!v || 'Password is required',
+          v => (v && v.length >= 6) || 'Password must be at least 6 characters'
+        ]
       }  
+    },
+    computed: {
+      validateEmail () {
+        return this.emailRules.map(this.email)
+      },
+      validatePassword () {
+       return this.passwordRules.map(this.password)
+      }
+    },
+    methods: {
+      validate () {
+        return this.validateEmail() && this.validatePassword();
+      },
+      submit () {
+        if (this.validate()) {
+          const user = {
+            email: this.email,
+            password: this.password
+          }
+          this.$store.dispatch('loginUser', user)
+          .then(() => {
+            this.$session.set('jwt', this.$store.getters.user)
+            this.$router.push('/')  
+          })
+          .catch(err => {
+            console.log(err)
+          })
+        }        
+      }
     }
   }
 </script>
 
 
 <style scoped>
+.parent {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  align-content: center; 
+  justify-content: center; 
+  overflow: auto;   
+}
 .win {
   background-color: wihte;
   box-shadow: 0 0 2px;
@@ -32,7 +93,7 @@
   color: gray;
   margin: 5px 0px 2px 0px;
   padding:3px;
-  min-width: 430px;
+  max-width: 430px;
 }
 .win-head {
   border-radius: 2px;
@@ -51,5 +112,41 @@
   text-shadow: 0 1px white;
   cursor: pointer;
   margin-right: 3px;
+}
+
+
+.form-control {
+/*  display: inline-block; */
+  font: 30pt  sans-serif;
+  position: relative;
+  margin: 5px 5px 0px 5px;
+}
+.form-control input {
+  display: inline-block;
+  border: 1px solid lightGray;
+  color: gray;
+  padding: 5px 25px 5px 5px;
+  border-radius: 2px;
+  font-size: 14px;
+}
+.form-control label {
+  display: block;
+  position: absolute;
+  left: 15px;
+  top: 22px;
+  color: #aaa;
+  font-size: 15px;
+  -webkit-transition: .1s;
+  transition: .1s;
+}
+.form-control input:valid + label,
+.form-control input:focus + label {
+  top: 0;
+  font-size: 14px;
+  color: gray;
+}
+button {
+  min-width: 60px;
+  margin: 4px 4px 10px 4px;
 }
 </style>

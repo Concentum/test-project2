@@ -7,6 +7,8 @@ import store from './store'
 // import axios from 'axios'
 // import moment from 'moment'
 
+import login from './components/auth/login'
+
 import mainMenu from './components/main-menu'
 import tray from './components/tray'
 import win from './components/win'
@@ -43,6 +45,8 @@ window.axios = require('axios')
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
 Vue.config.productionTip = false
+
+Vue.component('login', login)
 
 Vue.component('main-menu', mainMenu)
 Vue.component('tray', tray)

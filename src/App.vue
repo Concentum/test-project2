@@ -1,22 +1,27 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <main-menu :items="md.interfaces.main.menu" is-root @open-win="openWin"/>
-    </div>
+    <div v-if="user">
+      <div id="nav">
+        <main-menu :items="md.interfaces.main.menu" is-root @open-win="openWin"/>
+      </div>
 
-    <tray :items="items"
-     :current="current"
-      @open-win="openWin"
-    />
-<!-- <router-view> -->
-    <keep-alive>
-      <component v-if="current"
-      :is="'win'"
-      :item="current"
-      :key="current.key"
-    />
-    </keep-alive>
-<!-- </router-view> -->
+      <tray :items="items"
+       :current="current"
+        @open-win="openWin"
+      />
+  <!-- <router-view> -->
+      <keep-alive>
+        <component v-if="current"
+        :is="'win'"
+        :item="current"
+        :key="current.key"
+      />
+      </keep-alive>
+  <!-- </router-view> -->
+    </div>
+    <div v-else>
+      <login/>
+    </div>  
   </div>
 </template>
 
@@ -36,6 +41,9 @@ export default {
     },
     current () {
       return this.$store.getters.currentWin
+    },
+    user () {
+      return this.$store.getters.user
     }
   },
   methods: {
