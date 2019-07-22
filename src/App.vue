@@ -1,17 +1,47 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div id="nav">
+      <main-menu :items="md.interfaces.main.menu" is-root @open-win="openWin"/>
+    </div>
+
+    <tray :items="items"
+     :current="current"
+      @open-win="openWin"
+    />
+<!-- <router-view> -->
+    <keep-alive>
+      <component v-if="current"
+      :is="'win'"
+      :item="current"
+      :key="current.key"
+    />
+    </keep-alive>
+<!-- </router-view> -->
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import metadata from './metadata.json'
 
 export default {
   name: 'app',
-  components: {
-    HelloWorld
+  data () {
+    return {
+      md: metadata
+    }
+  },
+  computed: {
+    items () {
+      return this.$store.getters.wins
+    },
+    current () {
+      return this.$store.getters.currentWin
+    }
+  },
+  methods: {
+    openWin (e) {
+      this.$store.dispatch('openWin', e)
+    }
   }
 }
 </script>
@@ -21,8 +51,6 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
