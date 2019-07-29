@@ -2,7 +2,7 @@
   <div>
     <div class="form-control">
       <input type="checkbox" :key="fieldName"  :checked="value" @change="change" required>
-      <label :for="fieldName">{{ requisite.alias }}</label>
+      <label :for="fieldName">{{ requisite.label }}</label>
     </div>
   </div>
 </template>

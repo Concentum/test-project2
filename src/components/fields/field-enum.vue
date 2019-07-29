@@ -5,7 +5,7 @@
         <option v-for="(item, idx) in items" value="idx">{{item}}</option>
       </select>
  
-      <label :for="fieldName">{{ requisite.alias }}</label>
+      <label :for="fieldName">{{ requisite.label }}</label>
     </div>
   </div>
 </template>

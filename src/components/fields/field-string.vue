@@ -2,7 +2,7 @@
   <div>
     <div :class="['form-control', 'w-length']">
       <input type="text" :id="fieldName"  :value="value" @input="input" required  autocomplete = "off">
-      <label :for="fieldName">{{ requisite.alias }}</label>
+      <label :for="fieldName">{{ requisite.label }}</label>
     </div>
   </div>
 </template>

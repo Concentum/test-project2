@@ -11,7 +11,7 @@
         @focus="focus"
         @keydown="keydown"
       />
-      <label :for="fieldName">{{ requisite.alias }}</label>
+      <label :for="fieldName">{{ requisite.label }}</label>
     </div>
     <div class="button-req" v-if="requisite.subtype==='Object'" @click="$emit('open-reference', requisite, fieldName)">
       <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
@@ -51,19 +51,22 @@ export default {
     }
   },
   watch: {
-    value:  _.debounce(function (val) {
+    value: _.debounce(function (val) {
       if (val !== '') {
         let options = {
           params: {
             q: val
           }
         }
+        /*
         let endpoint = this.requisite.type.split(".").pop().replace(/_/g, "-")+'/search'
-        window.axios.get('http://api.yii2-sklad/api/' + endpoint, options).then((response) => {
+        axios.get('http://api.yii2-sklad/api/' + endpoint, options).then((response) => {
           this.items_ = response.data
           this.show(this.checkNeedOpen())
         }).catch(e => {
-        })  
+        }) 
+        */
+        this.$store.dispatch('search', { key: key, endpoint: endpoint, options: options })
       }  
     }, 500)
   }, 

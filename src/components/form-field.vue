@@ -39,8 +39,8 @@ export default {
   methods: {
     openReference (requisite, key) {
       this.$store.dispatch('openWin', { 
-        label: requisite.alias + ' Выбор', 
-        endpoint: requisite.type,
+        label: requisite.label + ' Выбор', 
+        endpoint: requisite.target,
         parentKey: this.endpoint.key,
         targetRequisite: key 
       })

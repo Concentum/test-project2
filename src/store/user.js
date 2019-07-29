@@ -10,8 +10,7 @@ class User {
   }
 }
 
-// const url = 'http://api.yii2-sklad/api/'
-const url = 'http://127.0.0.1:8081/'
+const url = 'http://127.0.0.1:8081/index-test.php/'
 
 export default {
   state: {

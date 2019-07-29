@@ -1,32 +1,29 @@
 export default {
   parseTypeInfo (str) {
     let result = {}
-    if (str.substr(0, 11) === 'references.') {
+    if (str.type === 'link') {
       result.subtype = 'Object'
-      result.class = str.split('.')[1]
-    } else if (str === 'timestamp' || str === 'datetime') {
+      result.class = str.target
+    } else if (str.type === 'date' || str.type === 'datetime') {
       result.subtype = 'Date'
-    } else if (str === 'integer' || str === 'smallint') {
+    } else if (str.type === 'integer') {
       result.subtype = 'Number'
-    } else if (str === 'text') {
+    } else if (str.type === 'string') {
       result.subtype = 'String'
-    } else if (str.substr(0, 8) === 'varchar(') {
-      result.subtype = 'String'
-      result.length = Number(str.replace('varchar(', '').replace(')', ''))
-    } else if (str.substr(0, 8) === 'numeric(') {
-      let tmp = str.replace('numeric(', '').replace(')', '').split(',')
+      result.length = Number(str.length || str.max)
+    } else if (str.type === 'number') {
       result.subtype = 'Number'
-      result.length = Number(tmp[0])
-      result.precision = Number(tmp[1])
+      result.length = Number(str.length || str.max)
+      result.precision = 2
     }
     return result
   },
-  getDefaultColWidth (requisite) {
+  getDefaultColWidth (requisite, colname) {
     switch (requisite.subtype) {
-      case 'Number': 
+      case 'Number':
         return 100
       case 'String':
-        return 300
+        return colname === "code" || colname === "number" ? 100 : 300
       case 'Object':
         return 300
       case 'Date':

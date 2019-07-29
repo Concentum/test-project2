@@ -1,6 +1,6 @@
 <template>
   <div class="hCell" :style="{'min-width':width+'px'}">
-    {{ requisite.alias }}
+    {{ requisite.label }}
     <i v-if="marker" :class="[marker, {'disable':disable}]" aria-hidden="false" @click="$emit('order-by', keyField)" style="float:right"></i>
   </div>
 </template>
@@ -29,7 +29,7 @@ export default {
       }
     },
     width () {
-      return common.getDefaultColWidth(this.requisite)
+      return common.getDefaultColWidth(this.requisite, this.keyField)
     }
   }
 }

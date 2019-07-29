@@ -5,7 +5,7 @@
         :id="fieldName"
         :value="pickedValue"
         :placeholder="placeholder" maxlength="20" @change="change" @input="input" required>
-      <label :for="fieldName">{{ requisite.alias }}</label>
+      <label :for="fieldName">{{ requisite.label }}</label>
     </div>
     <div class="button-req"><i @click="show = !show" class="fa fa-calendar-o" aria-hidden="true"></i></div>
 

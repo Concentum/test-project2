@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import win from './components/win.vue'
 
-import md from './metadata.json'
 
 Vue.use(Router)
 
@@ -21,5 +20,5 @@ function flat (arr) {
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: flat(md.interfaces.main.menu)
+  routes: undefined //flat(md.interfaces.main.menu)
 })

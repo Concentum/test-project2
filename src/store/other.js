@@ -1,7 +1,7 @@
+import axios from 'axios'
 import Vue from 'vue'
-import Vuex from 'vuex'
 
-Vue.use(Vuex)
+const url = 'http://127.0.0.1:8081/index-test.php/'
 
 export default {
   state: {
@@ -156,11 +156,19 @@ export default {
       }
     },
     fetch (context, pl) {
-      window.axios.get('http://api.yii2-sklad/api/' + pl.endpoint, pl.options).then((response) => {
+      pl.options.headers = {'Authorization': 'Bearer ' + this.getters.user.token}
+      axios.get(url + pl.endpoint, pl.options).then((response) => {
         context.commit('setData', { key: pl.key, data: response.data })
       }).catch(e => {
         console.log('error!')
       })
-    }
+    },
+    search (context, pl) {
+      axios.get(url + pl.endpoint, pl.options).then((response) => {
+        context.commit('setData', { key: pl.key, data: response.data })
+      }).catch(e => {
+        console.log('error!')
+      })
+    },
   }
 }

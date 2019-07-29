@@ -8,12 +8,20 @@
         <div class="form-control">
           <input type="text" id="email" v-model="email" required autocomplete = "off">
           <label for="email">Email</label>
-          <div>{{validateEmail}}</div> 
+          <ul class="error">
+            <li v-for="item in emailErrors" v-if="item !== true">
+              {{item}}
+            </li>
+          </ul> 
         </div>
         <div class="form-control">
           <input type="password" id="password" v-model="password" required autocomplete = "off">
           <label for="password">Password</label>
-          <div>{{validatePassword}}</div>
+          <ul class="error">
+            <li v-for="item in passwordErrors" v-if="item!==true">
+              {{item}}
+            </li>
+          </ul> 
         </div>
         <div>  
           <button @click="submit">Login</button>
@@ -27,8 +35,8 @@
   export default {
     data () {
       return {
-        email: '',
-        password: '',
+        email: 'sfriesen@jenkins.info',
+        password: 'password_0',
         valid: false,
         emailRules: [
           v => !!v || 'E-mail is required',
@@ -37,23 +45,27 @@
         passwordRules: [
           v => !!v || 'Password is required',
           v => (v && v.length >= 6) || 'Password must be at least 6 characters'
-        ]
+        ],
+        emailErrors: [],
+        passwordErrors: []
       }  
     },
     computed: {
-      validateEmail () {
-        return this.emailRules.map(this.email)
-      },
-      validatePassword () {
-       return this.passwordRules.map(this.password)
-      }
     },
     methods: {
-      validate () {
-        return this.validateEmail() && this.validatePassword();
+      validate (value, rules) {
+        let errors = []
+        rules.forEach(item => {
+          errors.push(item(value))
+        })
+        return errors.every(function(v) {
+          return v === true
+        }) || errors
       },
       submit () {
-        if (this.validate()) {
+        this.emailErrors = this.validate(this.email, this.emailRules)
+        this.passwordErrors = this.validate(this.password, this.passwordRules)
+        if (this.emailErrors === true && this.passwordErrors === true) {
           const user = {
             email: this.email,
             password: this.password
@@ -148,5 +160,9 @@
 button {
   min-width: 60px;
   margin: 4px 4px 10px 4px;
+}
+.error {
+  font-size: 10px;
+  color: gray;
 }
 </style>

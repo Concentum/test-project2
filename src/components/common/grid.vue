@@ -64,7 +64,7 @@ export default {
       } else this.$emit('edit')
     },
     width (requisite, key) {
-      if (requisite.type === 'timestamp' || requisite.type === 'datetime') {
+      if (requisite.type === 'date' || requisite.type === 'datetime') {
         return '142px'
       } else if (requisite.type === 'integer') {
         return '100px'

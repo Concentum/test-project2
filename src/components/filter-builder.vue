@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import metadata from '../metadata.json'
 import common from '../common.js'
 import _ from 'lodash'
 import moment from 'moment'

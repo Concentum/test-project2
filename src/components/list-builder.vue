@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import metadata from '../metadata.json'
 import common from '../common.js'
 import _ from 'lodash'
 
@@ -49,7 +48,8 @@ export default {
       confirmShow: false,
       filterShow: false,
       requisites: {},
-      properties: {}
+      properties: {},
+      title: { type: String }
     }
   },
   computed: {
@@ -74,20 +74,20 @@ export default {
     },
     openFilterForm () {
       this.$store.dispatch('openWin', {
-        label: this.properties.alias + ' Отбор',
+        label: this.properties.title + ' Отбор',
         endpoint: this.endpoint.endpoint + '/filter',
         parentKey: this.endpoint.key
       })
     },
     newElement () {
       this.$store.dispatch('openWin', {
-        label: this.properties.alias + ' Новый',
+        label:  this.title + ' Новый',
         endpoint: this.endpoint.endpoint + '/create'
       })
     },
     editElement () {
       this.$store.dispatch('openWin', {
-        label: this.properties.alias + ' #' + this.activeRow.id,
+        label: this.title + ' #' + this.activeRow.id,
         endpoint: this.endpoint.endpoint + '/' + this.activeRow.id
       })
     },
@@ -109,10 +109,12 @@ export default {
     }
   },
   created () {
-    this.properties = _.get(metadata, this.endpoint.endpoint + '.properties')
-    this.requisites = _.get(metadata, this.endpoint.endpoint + '.requisites')
+    let s = this.endpoint.endpoint
+    this.title = _.get(this.$store.getters.metadata, s + '.title')
+    this.properties = _.get(this.$store.getters.metadata, s + '.properties')
+    this.requisites = _.get(this.$store.getters.metadata, s + '.attributes')
     for (var key in this.requisites) {
-      let tmp = common.parseTypeInfo(this.requisites[key].type)
+      let tmp = common.parseTypeInfo(this.requisites[key])
       Object.assign(this.requisites[key], tmp)
     }
     this.fetch()
