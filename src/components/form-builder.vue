@@ -100,8 +100,11 @@ export default {
     this.properties = _.get(this.$store.getters.metadata, path + '.properties')
     this.requisites = _.get(this.$store.getters.metadata, path + '.attributes')
     this.details = _.get(this.$store.getters.metadata, path + '.details')
+ 
     for (let detail in this.details) {
-  //    this.$set(this.details[detail].requisites, 'nstr', {'alias': '№ стр', 'type': 'integer'})
+      this.$set(this.details[detail], 'requisites', this.details[detail].attributes)
+  //    this.$delete(this.details[detail], 'attributes')
+      this.$set(this.details[detail].requisites, 'nstr', {label: '№ стр', type: 'integer'})
     }
     
     this.typeCorrection(this.requisites)
