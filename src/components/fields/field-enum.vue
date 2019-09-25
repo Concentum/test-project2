@@ -2,9 +2,8 @@
   <div>
     <div :class="['form-control', 'w-length']">
       <select :id="fieldName" :value="value" @change="change" required>
-        <option v-for="(item, idx) in items" value="idx">{{item}}</option>
+        <option v-for="(item, idx) in requisite.items" :value="idx">{{item}}</option>
       </select>
- 
       <label :for="fieldName">{{ requisite.label }}</label>
     </div>
   </div>
@@ -54,11 +53,11 @@ export default {
   position: relative;
   margin: 5px 5px 0px 5px;
 }
-.form-control input {
+.form-control select {
   display: inline-block;
   border: 1px solid lightGray;
   color: gray;
-  padding: 5px 25px 5px 5px;
+  padding: 4px 4px 4px 4px;
   border-radius: 2px;
   font-size: 14px;
 }
@@ -72,8 +71,8 @@ export default {
   -webkit-transition: .1s;
   transition: .1s;
 }
-.form-control input:valid + label,
-.form-control input:focus + label {
+.form-control select:valid + label,
+.form-control select:focus + label {
   top: 0;
   font-size: 14px;
   color: gray;

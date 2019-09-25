@@ -52,8 +52,8 @@ export default {
   },  
   created () {
     let path = this.endpoint.endpoint.replace(/\/filter$/, '').replace(/\/\d+$/ig, '')
-    this.properties = _.get(metadata, path + '.properties')
-    this.requisites = _.get(metadata, path + '.requisites')
+    this.properties = _.get(this.$store.getters.metadata, path + '.properties')
+    this.requisites = _.get(this.$store.getters.metadata, path + '.attributes')
     for (var key in this.requisites) {
       let tmp = common.parseTypeInfo(this.requisites[key].type)
       Object.assign(this.requisites[key], tmp)

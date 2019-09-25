@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <tool-panel 
+  <div>{{representation}}
+    <component :is="toolPanelComponent"
       :disable="activeRow == undefined"
       @add="newElement"
       @edit="editElement"
@@ -8,7 +8,7 @@
       @filter="openFilterForm"
       @refresh="fetch"
     />
-    <search-panel @search="fetch"/>
+    <search-panel :endpoint="endpoint" @search="fetch"/>
 
     <grid @active-row="setActiveRow"
       @edit="editElement"
@@ -49,7 +49,8 @@ export default {
       filterShow: false,
       requisites: {},
       properties: {},
-      title: { type: String }
+      title: { type: String },
+      representation: { type: String }
     }
   },
   computed: {
@@ -58,6 +59,17 @@ export default {
     },
     currentPage () {
       return this.$store.getters.getCurrentPage(this.endpoint.key)
+    },
+    toolPanelComponent () {
+      if (this.endpoint.endpoint.split('.')[0] === 'documents') {
+        return 'doc-tool-panel'  
+      }
+      else if (this.endpoint.endpoint.split('.')[0] === 'references') {
+        return 'ref-tool-panel'
+      }
+      else if (this.endpoint.endpoint.split('.')[0] === 'service') {
+        return 'ref-tool-panel'
+      }
     }
   },
   methods: {
@@ -74,7 +86,7 @@ export default {
     },
     openFilterForm () {
       this.$store.dispatch('openWin', {
-        label: this.properties.title + ' Отбор',
+        label: this.title + ' Отбор',
         endpoint: this.endpoint.endpoint + '/filter',
         parentKey: this.endpoint.key
       })
@@ -101,21 +113,40 @@ export default {
       let options = {
         params: {
           page: page,
-          like: like,
           sort: this.$store.getters.getSort(this.endpoint.key)
         }
+        
       }
+      options.params['filter[or][][' + this.representation + '][like]'] = like
       this.$store.dispatch('fetch', { key: key, endpoint: endpoint, options: options })
     }
   },
   created () {
     let s = this.endpoint.endpoint
     this.title = _.get(this.$store.getters.metadata, s + '.title')
+    this.representation = _.get(this.$store.getters.metadata, s + '.representation') || undefined
+    if (Array.isArray(this.representation)) {
+      this.representation = this.representation[0]
+    }
+    if (this.representation === undefined) {
+      if (this.endpoint.endpoint.split('.')[0] === 'documents') {
+        this.representation = 'number'
+      }
+      if (this.endpoint.endpoint.split('.')[0] === 'references') {
+        this.representation = 'description'
+      }
+    }  
     this.properties = _.get(this.$store.getters.metadata, s + '.properties')
     this.requisites = _.get(this.$store.getters.metadata, s + '.attributes')
     for (var key in this.requisites) {
       let tmp = common.parseTypeInfo(this.requisites[key])
       Object.assign(this.requisites[key], tmp)
+      if (this.requisites[key].subtype == 'Object') {
+        tmp = _.get(this.$store.getters.metadata, this.requisites[key].target + '.representation')
+        if (typeof tmp == 'object') {
+          this.requisites[key].representation = tmp
+        }
+      }
     }
     this.fetch()
   }

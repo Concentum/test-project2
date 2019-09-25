@@ -9,6 +9,9 @@
 
 export default {
   name: 'search-panel',
+  props: {
+    endpoint: { type: Object }
+  },
   data () {
     return {
       search: ''
@@ -21,16 +24,18 @@ export default {
   },
   watch: {
     search: _.debounce(function (newVal) {
-      this.$emit('search', newVal)
-    }, 500)
+    //  console.log(this.endpoint)
+    //  this.$store.filter()
+      this.$emit('search', undefined, newVal, undefined)
+    }, 1000)
   }
 }
 </script>
 
 <style scoped lang="scss">
 .search-panel {
-margin: 5px;
-  display: inline-block;
+  margin: 5px;
+  display: inline; 
 }
 input {
   border-radius: 2px;
@@ -42,7 +47,7 @@ input {
 }
 .button-clear {
   display: inline-block;
-  margin-left: -18px;
+  margin-left: -14px; 
   cursor: default;
 }
 </style>

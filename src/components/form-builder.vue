@@ -90,7 +90,7 @@ export default {
     },
     typeCorrection (requisites) {
       for (var key in requisites) {
-        let tmp = common.parseTypeInfo(requisites[key].type)
+        let tmp = common.parseTypeInfo(requisites[key])
         Object.assign(requisites[key], tmp)
       }
     }
@@ -102,9 +102,13 @@ export default {
     this.details = _.get(this.$store.getters.metadata, path + '.details')
  
     for (let detail in this.details) {
-      this.$set(this.details[detail], 'requisites', this.details[detail].attributes)
-  //    this.$delete(this.details[detail], 'attributes')
-      this.$set(this.details[detail].requisites, 'nstr', {label: '№ стр', type: 'integer'})
+      let nstr = {
+        nstr: {
+          label: '№ стр', 
+          type: 'integer'
+        } 
+      }
+      this.$set(this.details[detail], 'requisites', Object.assign(nstr, this.details[detail].attributes))
     }
     
     this.typeCorrection(this.requisites)

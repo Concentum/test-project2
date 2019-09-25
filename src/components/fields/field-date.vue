@@ -27,7 +27,7 @@
           <tr v-for="i in 6">
             <td v-for="j in 7" @click="pickDate">
               <div :class="['wday', {'current': today === i * 7 + j - 7 - begin + 1 }]">
-                {{ (i * 7 + j - 7 >= begin) && (i * 7 + j - 7 - begin + 1 <= total) ? i * 7 + j - 7 - begin + 1 : '' }}
+                {{ ((i * 7 + j - 7 >= begin) && (i * 7 + j - 7 - begin + 1 <= total)) ? i * 7 + j - 7 - begin + 1 : '' }}
               </div>
             </td>
           </tr>
@@ -136,9 +136,6 @@ export default {
 .requisite {
   display: inline-block;
 }
-.w-length input {
-  width: 382px;
-}
 .form-control {
   display: inline-block;
   font: 30pt  sans-serif;
@@ -170,9 +167,10 @@ export default {
   color: gray;
 }
 .button-req {
-  position: relative;
+  position: absolute;
   display: inline-block;
-  margin-left: -30px;
+  margin-left: -28px; 
+  margin-top: 28px; 
   cursor: default;
 /* border: 1px solid lightGray;
   border-radius: 3px; */

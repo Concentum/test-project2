@@ -164,8 +164,9 @@ export default {
       })
     },
     search (context, pl) {
-      axios.get(url + pl.endpoint, pl.options).then((response) => {
-        context.commit('setData', { key: pl.key, data: response.data })
+      pl.options.headers = {'Authorization': 'Bearer ' + this.getters.user.token}
+      return axios.get(url + pl.endpoint, pl.options).then(response => {
+          return response
       }).catch(e => {
         console.log('error!')
       })

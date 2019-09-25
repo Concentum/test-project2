@@ -1,6 +1,8 @@
 <template>
   <div class="tool-panel">
     <div class="button"><i class="fa fa-plus" aria-hidden="true" @click="$emit('add')"></i></div>
+    <div class="button"><i class="fa fa-folder-o" aria-hidden="true" @click="$emit('add')"></i></div>
+    <div class="button"><i :class="['fa fa-clone', {'disable': disable}]" aria-hidden="true" @click="$emit('clone')"></i></div>
     <div class="button"><i :class="['fa fa-pencil', {'disable': disable}]" aria-hidden="true" @click="$emit('edit')"></i></div>
     <div class="button"><i :class="['fa fa-trash-o', {'disable': disable}]" aria-hidden="true" @click="$emit('delete')"></i></div>
     <div class="button"><i class="fa fa-filter" aria-hidden="true" @click="$emit('filter')"></i></div>
@@ -10,7 +12,7 @@
 
 <script>
 export default {
-  name: 'tool-panel',
+  name: 'ref-tool-panel',
   props: {
     disable: { type: Boolean, default: true }
   }

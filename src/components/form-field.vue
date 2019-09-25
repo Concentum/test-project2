@@ -52,5 +52,5 @@ export default {
 <style scoped>
 .requisite {
   display: inline-block;
-} 
+}
 </style>

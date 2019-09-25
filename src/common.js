@@ -15,6 +15,10 @@ export default {
       result.subtype = 'Number'
       result.length = Number(str.length || str.max)
       result.precision = 2
+    } else if (str.type === 'boolean') {
+      result.subtype = 'Boolean'
+    } else if (str.type === 'enum') {
+      result.subtype = 'Enum'
     }
     return result
   },

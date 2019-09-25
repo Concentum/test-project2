@@ -1,10 +1,9 @@
 <template>
   <div>
     <div :class="['form-control', 'w-length']">
-      <input type="hidden" :value="value">
       <input type="text" required  ref="input" autocomplete = "off"
         :id="fieldName"
-        :value="value"
+        :value="calcValue()"
         @input="input" 
         @dblclick="dblclick"    
         @blur="blur"
@@ -19,7 +18,7 @@
     <ul v-show="open" class="dropdown-list scrollable-list" ref="list" :style="{width: width+'px'}">
       <li v-for="(item, idx) in items_" @click="pick(item)" :key="idx" :id="item.id" :class="['dd-item', {'active': activeIndex === idx}]"
         @mouseenter="activeIndex = idx" @mouseleave="activeIndex = -1">
-          {{item.description}}
+          {{item[representation]}}
       </li>
     </ul>
   </div>
@@ -31,7 +30,7 @@ export default {
   props: {
     requisite: { type: Object },
     fieldName: { type: String },
-    endpoint:  { type: Object }
+    endpoint:  { type: Object },
   },
   data () {
     return { 
@@ -39,40 +38,56 @@ export default {
       width: 100,
       items_: [],
       activeIndex: -1,
-      value: this.storeValue().description
+      value: undefined,
+      oldValue: undefined
     }
   },
+  created () {
+    this.value = this.storeValue
+    this.oldValue = this.value
+  },  
   computed: {
-    calc () {
-      if (this.value !== this.storeValue().description) {
-        this.value = this.storeValue().description
-      }
-      return this.storeValue().description
-    }
+    representation () {
+      return this.requisite.representation || 'description';
+    },
+    storeValue () {
+      let v = this.$store.getters.getRequisiteValue(this.endpoint.key, this.fieldName)
+      return v === undefined ? '' : v[this.representation]
+    },
   },
   watch: {
     value: _.debounce(function (val) {
       if (val !== '') {
         let options = {
-          params: {
-            q: val
-          }
+          params: {}
         }
-        /*
-        let endpoint = this.requisite.type.split(".").pop().replace(/_/g, "-")+'/search'
-        axios.get('http://api.yii2-sklad/api/' + endpoint, options).then((response) => {
-          this.items_ = response.data
-          this.show(this.checkNeedOpen())
-        }).catch(e => {
-        }) 
-        */
-        this.$store.dispatch('search', { key: key, endpoint: endpoint, options: options })
+        options.params['filter[or][][' + this.representation + '][like]'] = val
+    //    options.params['filter[or][][code][like]'] = val
+        options.params['fields'] = 'id,code,' + this.representation
+        let endpoint = this.requisite.class.split(".").pop().replace(/_/g, "-")
+        this.$store.dispatch('search', { endpoint: endpoint, options: options }).then((res) => {
+          if (res) {
+            this.items_ = res.data.items
+            this.show(this.checkNeedOpen())
+          }  
+        })
       }  
     }, 500)
   }, 
   methods: {
-    storeValue () {
-      return this.$store.getters.getRequisiteValue(this.endpoint.key, this.fieldName)
+    calcValue () {
+      if (this.value === this.oldValue && this.value === this.storeValue) {
+        return this.value
+      } else if ((this.value !== this.oldValue) && (this.oldValue === this.storeValue)) {
+        return this.value
+      } else if ((this.value !== this.oldValue) && (this.value !== this.storeValue)) {
+        this.value = this.storeValue
+        this.oldValue = this.value  
+        return this.value
+      } else {
+        this.value = this.storeValue
+        this.oldValue = this.value  
+      }
     },
     dblclick(e) {
       e.target.select()
@@ -86,8 +101,8 @@ export default {
     },
     checkNeedOpen () {
       let val = this.$store.getters.getRequisiteValue(this.endpoint.key, this.fieldName)
-      if (val.description !== undefined) {
-        if (val.description === this.value) {
+      if (val[this.representation] !== undefined) {
+        if (val[this.representation] === this.value) {
           return false
         } else {
           return true
@@ -108,7 +123,7 @@ export default {
         requisite: this.fieldName,
         value: item
       })
-      this.value = item.description
+      this.value = item[this.representation]
       this.$refs.input.focus()
       this.activeIndex = -1
       this.close()
@@ -132,7 +147,7 @@ export default {
             }
             break
           case 27:// escape
-            this.value = this.storeValue().description
+            this.value = this.storeValue
             this.close()
             break
         }
@@ -166,7 +181,7 @@ export default {
 <style scoped>
 .w-length input {
   width: 382px;
-}
+} 
 .form-control {
   display: inline-block;
   font: 30pt  sans-serif;
@@ -198,9 +213,10 @@ export default {
   color: gray;
 }
 .button-req {
-  position: relative;
+  position: absolute;
   display: inline-block;
-  margin-left: -30px;
+  margin-left: -28px;
+  margin-top: 28px;
   cursor: default;
   width: 18px;
   text-align: center;

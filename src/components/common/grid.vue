@@ -77,7 +77,16 @@ export default {
         return ''
       }
       if (value !== null && typeof value === 'object') {
-        return value.description
+        if (typeof this.requisites[key].representation === 'object') {
+          let arr = this.requisites[key].representation
+          let result = ''
+          for (key in arr) {
+            result = result + ' ' + value[arr[key]]
+          }  
+          return result
+        } else {
+          return value.description || undefined
+        }  
       }
       if (this.requisites[key].type === 'timestamp') {
         return moment(value).format('YYYY-MM-DD hh:mm:ss')
@@ -118,7 +127,7 @@ export default {
   color: gray;
   padding: 0;
   margin: 0;
-  height: 20px;
+  height: 28px;
   border: 1px solid lightGray;
   border-right: 0;
   border-left: 0;

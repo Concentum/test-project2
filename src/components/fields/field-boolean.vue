@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="form-control">
-      <input type="checkbox" :key="fieldName"  :checked="value" @change="change" required>
+      <input type="checkbox" :id="fieldName"  :checked="value" @change="change">
       <label :for="fieldName">{{ requisite.label }}</label>
     </div>
   </div>
@@ -38,6 +38,7 @@ export default {
 </script>
 
 <style scoped>
+/*
 .requisite {
   display: inline-block;
 }
@@ -59,7 +60,7 @@ export default {
   font-size: 14px;
 }
 .form-control label {
-  display: block;
+  display: blw-lengthock;
   position: absolute;
   left: 15px;
   top: 22px;
@@ -67,11 +68,5 @@ export default {
   font-size: 15px;
   -webkit-transition: .1s;
   transition: .1s;
-}
-.form-control input:valid + label,
-.form-control input:focus + label {
-  top: 0;
-  font-size: 14px;
-  color: gray;
-}
+}*/ 
 </style>

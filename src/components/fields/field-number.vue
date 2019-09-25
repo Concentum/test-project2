@@ -42,7 +42,7 @@ export default {
   display: inline-block;
 }
 .w-length input {
-  width: 382px;
+  /*width: 382px;*/
 }
 .form-control {
   display: inline-block;
