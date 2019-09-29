@@ -24,9 +24,31 @@ export default {
   },
   watch: {
     search: _.debounce(function (newVal) {
-    //  console.log(this.endpoint)
-    //  this.$store.filter()
-      this.$emit('search', undefined, newVal, undefined)
+      if (newVal.length > 0 && newVal.length < 3) {
+        return
+      }
+      let code = {}
+      let descr = {}
+      let numb = {}
+
+      let s = this.endpoint.endpoint
+      let requisites = _.get(this.$store.getters.metadata, s + '.attributes')
+      let representation = _.get(this.$store.getters.metadata, s + '.representation') || undefined
+      if ('code' in requisites) {
+        code['[or][][code][like]'] = newVal
+      }
+      if ('description' in requisites) {
+        descr['[or][][description][like]'] = newVal
+      }
+      if (representation !== undefined) {
+        descr['[or][][' + representation + '][like]'] = newVal
+      }
+      if (s.split('.')[0] === 'documents' && "number" in requisites) {
+        numb['[or][][number][like]'] = newVal
+      }
+      let filter = Object.assign(code, descr, numb)
+      this.$store.dispatch('filter', { filter: filter, key: this.endpoint.key })
+      this.$emit('search')
     }, 1000)
   }
 }

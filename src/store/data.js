@@ -9,7 +9,7 @@ export default {
     currentWin: undefined,
     data: {},
     sort: {},
-    filter: []
+    filter: {}
   },
   getters: {
     getFilter: state => key => {
@@ -52,11 +52,6 @@ export default {
   },
 
   mutations: {
-    setFilter (state, pl) {
-      if (state.filter[pl.key] !== pl.requisites) {
-        Vue.set(state.filter, pl.key, pl.requisites)
-      }
-    },
     localSort (state, pl) {
       state.data[pl.key][pl.detail].sort(
         (a, b) => {
@@ -116,6 +111,9 @@ export default {
     },
     setData (state, pl) {
       Vue.set(state.data, pl.key, pl.data)
+    },
+    setFilter (state, pl) {
+      Vue.set(state.filter, pl.key, pl.filter)
     }
   },
 
@@ -162,14 +160,6 @@ export default {
       }).catch(e => {
         console.log('error!')
       })
-    },
-    search (context, pl) {
-      pl.options.headers = {'Authorization': 'Bearer ' + this.getters.user.token}
-      return axios.get(url + pl.endpoint, pl.options).then(response => {
-          return response
-      }).catch(e => {
-        console.log('error!')
-      })
-    },
+    } 
   }
 }

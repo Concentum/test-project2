@@ -20,5 +20,5 @@ function flat (arr) {
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: undefined //flat(md.interfaces.main.menu)
+  routes: undefined 
 })

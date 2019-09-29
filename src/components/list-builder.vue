@@ -1,5 +1,5 @@
 <template>
-  <div>{{representation}}
+  <div>
     <component :is="toolPanelComponent"
       :disable="activeRow == undefined"
       @add="newElement"
@@ -107,17 +107,19 @@ export default {
       this.confirmShow = false
       this.fetch()
     },
-    fetch (page, like, sort) {
+    fetch (page) {
       let key = this.endpoint.key
       let endpoint = this.endpoint.endpoint.split('.').pop().replace(/_/g, '-')
       let options = {
         params: {
           page: page,
-          sort: this.$store.getters.getSort(this.endpoint.key)
+          sort: this.$store.getters.getSort(this.endpoint.key),
         }
-        
       }
-      options.params['filter[or][][' + this.representation + '][like]'] = like
+      let obj = this.$store.getters.getFilter(this.endpoint.key)
+      for (let i in obj ) {
+        options.params['filter' + i] = obj[i]
+      }
       this.$store.dispatch('fetch', { key: key, endpoint: endpoint, options: options })
     }
   },

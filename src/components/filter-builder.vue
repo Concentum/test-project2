@@ -3,6 +3,16 @@
     <table>
       <tr v-for="(requisite, key) in requisites" :key="key">
         <td>
+          <div class="form-control">
+            <select :id="'logic-'+ requisite" required>
+              <option :value="idx" v-for="(logic, idx) in logic">
+                {{ logic }}
+              </option>
+            </select>
+            <label :for="'logic-' + requisite">Условие</label>
+          </div>
+        </td>
+        <td>
           <filter-condition :value="requisite.subtype" :fieldName="key"/>
         </td>
         <td>
@@ -11,6 +21,10 @@
             :requisite="requisite"
             :endpoint="endpoint"
           />
+          <form-field v-if="requisite.subtype == 'Date' || requisite.subtype == 'Number'"
+            :requisite="requisite"
+            :endpoint="endpoint"
+          />  
         </td>
       </tr>
     </table>
@@ -36,6 +50,7 @@ export default {
   data () {
     return {
       requisites: { type: Object },
+      logic: ['AND', 'OR']
     }
   },
   computed: {
@@ -79,4 +94,35 @@ button {
   margin: 20px 4px 10px 4px;
   height: 25px;
 }
+.form-control {
+  display: inline-block;
+  font: 30pt  sans-serif;
+  position: relative;
+  margin: 5px 5px 0px 5px;
+}
+.form-control select {
+  display: inline-block;
+  border: 1px solid lightGray;
+  color: gray;
+  padding: 4px 4px 4px 4px;
+  border-radius: 2px;
+  font-size: 14px;
+  width: 80px;
+} 
+.form-control label {
+  display: block;
+  position: absolute;
+  left: 15px;
+  top: 22px;
+  color: #aaa;
+  font-size: 15px;
+  -webkit-transition: .1s;
+  transition: .1s;
+} 
+.form-control select:valid + label,
+.form-control select:focus + label {
+  top: 0;
+  font-size: 14px;
+  color: gray;
+} 
 </style>

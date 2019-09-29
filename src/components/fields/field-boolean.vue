@@ -1,9 +1,15 @@
 <template>
   <div>
-    <div class="form-control">
+    <div v-if="asSelect" class="form-control">
       <input type="checkbox" :id="fieldName"  :checked="value" @change="change">
       <label :for="fieldName">{{ requisite.label }}</label>
-    </div>
+    </div> 
+    <div v-else :class="['form-control', 'o-length']">
+      <select :id="fieldName" required>
+         <option v-for="(item, i) in items" :value="i">{{item}}</option>
+      </select>
+      <label :for="fieldName">{{ requisite.label }}</label>
+    </div>  
   </div>
 </template>
 
@@ -13,7 +19,13 @@ export default {
   props: {
     requisite: { type: Object },
     fieldName: { type: String, default: '' },
-    endpoint:  { type: Object }
+    endpoint:  { type: Object },
+    asSelect: { type: Boolean, default: false }
+  },
+  data () {
+    return {
+      items: [null, 'False', 'True']
+    }  
   },
   methods: {
     change (e) {
@@ -37,13 +49,12 @@ export default {
 }
 </script>
 
-<style scoped>
-/*
+<style scoped> 
 .requisite {
   display: inline-block;
-}
-.w-length input {
-  width: 382px;
+} 
+.o-length select {
+  width: 191px;
 }
 .form-control {
   display: inline-block;
@@ -51,16 +62,16 @@ export default {
   position: relative;
   margin: 5px 5px 0px 5px;
 }
-.form-control input {
+.form-control select {
   display: inline-block;
   border: 1px solid lightGray;
   color: gray;
-  padding: 5px 25px 5px 5px;
+  padding: 4px 4px 4px 4px;
   border-radius: 2px;
   font-size: 14px;
 }
 .form-control label {
-  display: blw-lengthock;
+  display: block;
   position: absolute;
   left: 15px;
   top: 22px;
@@ -68,5 +79,11 @@ export default {
   font-size: 15px;
   -webkit-transition: .1s;
   transition: .1s;
-}*/ 
+}
+.form-control select:valid + label,
+.form-control select:focus + label {
+  top: 0;
+  font-size: 14px;
+  color: gray;
+}
 </style>

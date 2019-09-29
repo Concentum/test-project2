@@ -73,7 +73,6 @@
           this.$store.dispatch('loginUser', user)
           .then(() => {
             this.$session.set('jwt', this.$store.getters.user)
-            this.$router.push('/')  
           })
           .catch(err => {
             console.log(err)

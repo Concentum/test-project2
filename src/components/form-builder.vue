@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div> <!--
+    <tab-list :slots="['requisites', 'properties']">
+    </tab-list>  
+-->
     <template v-for="(requisite, key) in requisites">
       <form-field v-if="formData"
         :fieldName="key"
@@ -7,6 +10,15 @@
         :endpoint="endpoint"
       />
     </template>
+
+    <template v-for="(property, key) in properties">
+      <form-field v-if="formData"
+        :fieldName="key"
+        :requisite="property"
+        :endpoint="endpoint"
+      />
+    </template>
+
     <template v-for="(detail, key) in details">
       <field-grid
         :detailName="key"
@@ -46,6 +58,7 @@ export default {
   data () {
     return {
       requisites: { type: Object },
+      properties: { type: Object },
       details: { type: Object },
       isNew: false,
       confirmShow: false
@@ -75,7 +88,7 @@ export default {
           expand: this.details !== undefined ? Object.keys(this.details).join(',') : undefined
         }
       }
-      let endpoint = this.endpoint.endpoint.split(".").pop().replace(/_/g, "-") //.split("/")[0]
+      let endpoint = this.endpoint.endpoint.split(".").pop().replace(/_/g, "-")
       this.$store.dispatch('fetch', {
         key: this.endpoint.key, 
         endpoint: endpoint, 

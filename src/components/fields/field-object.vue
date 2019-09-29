@@ -45,6 +45,22 @@ export default {
   created () {
     this.value = this.storeValue
     this.oldValue = this.value
+    this.$watch('value', _.debounce(function (val) {
+      if (val !== '') {
+        let options = {
+          params: {}
+        }
+        options.params['filter[or][][' + this.representation + '][like]'] = val
+        options.params['fields'] = 'id,code,' + this.representation
+        let endpoint = this.requisite.class.split(".").pop().replace(/_/g, "-")
+        this.$store.dispatch('search', { endpoint: endpoint, options: options }).then((res) => {
+          if (res) {
+            this.items_ = res.data.items
+            this.show(this.checkNeedOpen())
+          }  
+        })
+      }  
+    }, 500))
   },  
   computed: {
     representation () {
@@ -52,9 +68,10 @@ export default {
     },
     storeValue () {
       let v = this.$store.getters.getRequisiteValue(this.endpoint.key, this.fieldName)
-      return v === undefined ? '' : v[this.representation]
+      return v === undefined || v === null ? '' : v[this.representation]
     },
   },
+  /*
   watch: {
     value: _.debounce(function (val) {
       if (val !== '') {
@@ -62,7 +79,6 @@ export default {
           params: {}
         }
         options.params['filter[or][][' + this.representation + '][like]'] = val
-    //    options.params['filter[or][][code][like]'] = val
         options.params['fields'] = 'id,code,' + this.representation
         let endpoint = this.requisite.class.split(".").pop().replace(/_/g, "-")
         this.$store.dispatch('search', { endpoint: endpoint, options: options }).then((res) => {
@@ -73,7 +89,7 @@ export default {
         })
       }  
     }, 500)
-  }, 
+  }, */ 
   methods: {
     calcValue () {
       if (this.value === this.oldValue && this.value === this.storeValue) {

@@ -44,7 +44,7 @@ export default {
 .requisite {
   display: inline-block;
 }
-.w-length input {
+.w-length select {
   width: 382px;
 }
 .form-control {

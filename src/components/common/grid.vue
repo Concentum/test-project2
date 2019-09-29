@@ -21,7 +21,7 @@
               @click="$emit('active-row', row)"
               @mousedown.stop="noselect" @selectstart.stop="noselect"
               @dblclick="dblclick">
-              <i v-if="(key == 'status' && row[key] == 1)" class="fa fa-check" aria-hidden="true"></i>
+              <i v-if="requisite.type === 'boolean' && row[key]" class="fa fa-check" aria-hidden="true"></i>
               <template v-else>{{ viewValue(row[key], key) }}</template>
             </div>
           </td>
@@ -90,6 +90,9 @@ export default {
       }
       if (this.requisites[key].type === 'timestamp') {
         return moment(value).format('YYYY-MM-DD hh:mm:ss')
+      }
+      if (this.requisites[key].type === 'enum') {
+        return this.requisites[key]['items'][value]
       }
       return value
     },
