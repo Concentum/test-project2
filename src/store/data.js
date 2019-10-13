@@ -12,8 +12,24 @@ export default {
     filter: {}
   },
   getters: {
-    getFilter: state => key => {
-      return state.filter[key]
+    getFilter: state => (key) => {
+      return state.filter[key] || undefined
+    },
+    getParams: state => key => {
+      let tmp = state.filter[key]
+      let result = {}
+      for (var i in tmp) {
+        for (var j in [0, 1]) {
+          let key = i
+          let val = Object.values(Object.values(tmp[i])[0])[j]
+          if (val instanceof Object && val['id'] !== undefined) {
+            val = val['id']
+            key += '_id'
+          } 
+          result['filter[' + Object.keys(tmp[i])[0] + '][][' + key + '][' + Object.keys(Object.values(tmp[i])[0])[j] + ']'] = val
+        }
+      }
+      return result
     },
     getSort: state => key => {
       return state.sort[key]
@@ -155,11 +171,20 @@ export default {
     },
     fetch (context, pl) {
       pl.options.headers = {'Authorization': 'Bearer ' + this.getters.user.token}
+      pl.options.params = Object.assign(pl.options.params, this.getters.getParams(pl.key))
       axios.get(url + pl.endpoint, pl.options).then((response) => {
         context.commit('setData', { key: pl.key, data: response.data })
       }).catch(e => {
-        console.log('error!')
+        console.log(e)
       })
-    } 
+    }, 
+    search (context, pl) {
+      pl.options.headers = {'Authorization': 'Bearer ' + this.getters.user.token}
+      return axios.get(url + pl.endpoint, pl.options).then(response => {
+          return response
+      }).catch(e => {
+        console.log(e)
+      })
+    }
   }
 }

@@ -7,6 +7,7 @@
 
 <script>
 
+import _ from 'lodash'
 export default {
   name: 'search-panel',
   props: {
@@ -27,26 +28,24 @@ export default {
       if (newVal.length > 0 && newVal.length < 3) {
         return
       }
-      let code = {}
-      let descr = {}
-      let numb = {}
-
-      let s = this.endpoint.endpoint
-      let requisites = _.get(this.$store.getters.metadata, s + '.attributes')
-      let representation = _.get(this.$store.getters.metadata, s + '.representation') || undefined
-      if ('code' in requisites) {
-        code['[or][][code][like]'] = newVal
-      }
-      if ('description' in requisites) {
-        descr['[or][][description][like]'] = newVal
-      }
-      if (representation !== undefined) {
-        descr['[or][][' + representation + '][like]'] = newVal
-      }
-      if (s.split('.')[0] === 'documents' && "number" in requisites) {
-        numb['[or][][number][like]'] = newVal
-      }
-      let filter = Object.assign(code, descr, numb)
+      let filter = {}
+      if (newVal.length > 0) {
+        let s = this.endpoint.endpoint
+        let requisites = _.get(this.$store.getters.metadata, s + '.attributes')
+        let representation = _.get(this.$store.getters.metadata, s + '.representation') || undefined
+        if ('code' in requisites) {
+          filter['code'] = {'or': {'like': newVal}}
+        }
+        if ('description' in requisites) {
+          filter['description'] = {'or': {'like': newVal}}
+        }
+        if (representation !== undefined) {
+          filter[representation] = {'or': {'like': newVal}}
+        }
+        if (s.split('.')[0] === 'documents' && "number" in requisites) {
+          filter['number'] = {'or': {'like': newVal}}
+        }
+      }      
       this.$store.dispatch('filter', { filter: filter, key: this.endpoint.key })
       this.$emit('search')
     }, 1000)

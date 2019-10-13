@@ -42,7 +42,8 @@ export default {
         label: requisite.label + ' Выбор', 
         endpoint: requisite.target,
         parentKey: this.endpoint.key,
-        targetRequisite: key 
+        targetRequisite: key,
+        filter: requisite.filter
       })
     }
   }

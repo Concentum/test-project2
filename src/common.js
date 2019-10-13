@@ -54,6 +54,10 @@ export default {
         data[key] = 0
       } else if (requisites[key].subtype === 'String') {
         data[key] = ''
+      } else if (requisites[key].subtype === 'Boolean') {
+        data[key] = undefined
+      } else if (requisites[key].subtype === 'Date') {
+        data[key] = new Date().toISOString().split('.')[0].replace('T', ' ')
       }  
     }
     return data

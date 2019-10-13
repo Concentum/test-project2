@@ -50,6 +50,11 @@ export default {
         let options = {
           params: {}
         }
+        if (this.requisite.filter !== undefined) {
+          for (let i in this.requisite.filter) {
+            options.params['filter['+i+']'] = this.requisite.filter[i]
+          }
+        }  
         options.params['filter[or][][' + this.representation + '][like]'] = val
         options.params['fields'] = 'id,code,' + this.representation
         let endpoint = this.requisite.class.split(".").pop().replace(/_/g, "-")

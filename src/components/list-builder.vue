@@ -115,11 +115,7 @@ export default {
           page: page,
           sort: this.$store.getters.getSort(this.endpoint.key),
         }
-      }
-      let obj = this.$store.getters.getFilter(this.endpoint.key)
-      for (let i in obj ) {
-        options.params['filter' + i] = obj[i]
-      }
+      } 
       this.$store.dispatch('fetch', { key: key, endpoint: endpoint, options: options })
     }
   },
@@ -147,6 +143,16 @@ export default {
         tmp = _.get(this.$store.getters.metadata, this.requisites[key].target + '.representation')
         if (typeof tmp == 'object') {
           this.requisites[key].representation = tmp
+        }
+      }
+    }
+    for (var key in this.properties) {
+      let tmp = common.parseTypeInfo(this.properties[key])
+      Object.assign(this.properties[key], tmp)
+      if (this.properties[key].subtype == 'Object') {
+        tmp = _.get(this.$store.getters.metadata, this.properties[key].target + '.representation')
+        if (typeof tmp == 'object') {
+          this.properties[key].representation = tmp
         }
       }
     }

@@ -3,8 +3,8 @@
     <div :class="'form-control'">
       <input type="text" autocomplete = "off"
         :id="fieldName"
-        :value="pickedValue"
-        :placeholder="placeholder" maxlength="20" @change="change" @input="input" required>
+        :value="val"
+        :placeholder="placeholder" maxlength="19" @change="change" @keypress="keypress" @keydown="keydown" @input="input">
       <label :for="fieldName">{{ requisite.label }}</label>
     </div>
     <div class="button-req"><i @click="show = !show" class="fa fa-calendar-o" aria-hidden="true"></i></div>
@@ -20,12 +20,12 @@
             <td @click="yearClick(1)">»</td>
           </tr>
           <tr class="clndr-days">
-            <td v-for="day in days">{{day}}</td>
+            <td v-for="day in days" :key="day">{{day}}</td>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="i in 6">
-            <td v-for="j in 7" @click="pickDate">
+          <tr v-for="i in 6" :key="i">
+            <td v-for="j in 7" :key="j" @click="pickDate">
               <div :class="['wday', {'current': today === i * 7 + j - 7 - begin + 1 }]">
                 {{ ((i * 7 + j - 7 >= begin) && (i * 7 + j - 7 - begin + 1 <= total)) ? i * 7 + j - 7 - begin + 1 : '' }}
               </div>
@@ -45,12 +45,13 @@ export default {
     fieldName: { type: String, default: '' },
     endpoint:  { type: Object },
 
-    name: { type: String,	default: '' },
-    format: { type: String, default: 'DD-MM-YYYY' },
-    local: { type: String, default: 'en' },
+//    format: { type: String, default: 'YYYY-MM-DD hh:mm:ss' },
+//    mask: { type: String, default: '####.##.## ##:##:##' }
+
+    local: { type: String, default: 'ru' },
     monday: { type: Number, default: 0 },
     placeholder: { type: String, default: '' },
-    mask: { type: String, default: '##.##.####' }
+    
   },
   data () {
     return {
@@ -60,14 +61,48 @@ export default {
         'en': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         'de': ['Jan', 'Feb', 'Mae', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
       },
-      old: this.storeValue() !== undefined ? new Date(this.storeValue()) : new Date(),
-      now: this.storeValue() !== undefined ? new Date(this.storeValue()) : new Date(),
-      pickedValue: this.storeValue() !== undefined ? new Date(this.storeValue()).toLocaleDateString() : undefined
+      now: undefined
+    }
+  },
+  watch: { 
+    val (v) {
+      if (v === undefined) {
+        return
+      }
+      if (/^\d{4}$/.test(v)) {
+        this.val += '-'
+      }  
+      if (/^\d{4}-\d{2}$/.test(v)) {
+        this.val += '-'
+      } 
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        this.val += ' '
+      } 
+      if (/^\d{4}-\d{2}-\d{2} \d{2}$/.test(v)) {
+        this.val += ':'
+      } 
+      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(v)) {
+        this.val += ':'
+      }
     }
   },
   computed: {
+    val: {
+      get () {
+        let v = this.$store.getters.getRequisiteValue(this.endpoint.key, this.fieldName) || undefined
+        this.now = v !== undefined ? new Date(v) : new(Date)
+        return v
+      },
+      set (value) {
+        this.$store.commit('setRequisiteValue', {
+          key: this.endpoint.key,
+          requisite: this.fieldName,
+          value: value
+        })
+      }
+    },
     days () {
-      var days = {
+      let days = {
         'ru': ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
         'en': ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
         'de': ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -78,7 +113,7 @@ export default {
       return this.now.getDate()
     },
     begin () {
-      var d = new Date(this.now.getFullYear(), this.now.getMonth())
+      let d = new Date(this.now.getFullYear(), this.now.getMonth())
       return this.monday === 0 ? (d.getDay() === 0 ? d.getDay() + 7 : d.getDay()) : d.getDay() + 1
     },
     total () {
@@ -86,23 +121,43 @@ export default {
     }
   },
   methods: {
-    storeValue () {
-      return this.$store.getters.getRequisiteValue(this.endpoint.key, this.fieldName)
+    format (d) {
+      return  d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2) + ' ' +
+      ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ':' + ('0' + d.getSeconds()).slice(-2)
     },
     input (e) {
-      var str = e.target.value
-      var m = str.match(/^(\d{2})(\d{2})(\d{4})$/)
-      if (m !== null) {
-        this.now = new Date(m[3], m[2] - 1, m[1])
-        this.pickedValue = this.now.toLocaleDateString()
+      let sS = e.target.selectionStart
+      let sE = e.target.selectionEnd
+      if (['-', ':', ' '].includes(e.target.value[sS])) {
+        sS++ 
+      }
+      e.target.selectionStart = sS
+      e.target.selectionEnd = sS
+    },
+    keydown (e) {
+      if (e.keyCode == 27) {
+        e.target.value = this.val
+      }
+    },  
+    keypress (e) {
+      if (e.keyCode < 47 || e.keyCode > 57) {
+        e.preventDefault()
+      } else if (e.target.value.length == 19) {
+        let s = e.target.value
+        let sS = e.target.selectionStart
+        let sE = e.target.selectionEnd
+        e.target.value = s.slice(0, e.target.selectionStart) + s.slice(sS+1)
+        
+        e.target.selectionStart = sS
+        e.target.selectionEnd = sS
       }
     },
     change (e) {
-      this.now = new Date(e.target.value)
-      this.pickedValue = this.now.toLocaleDateString()
+      this.now =  !isNaN(new Date(e.target.value).getTime()) ? new Date(e.target.value) : new Date()
+      this.val = this.format(this.now)//this.now.toISOString().split('.')[0].replace('T', ' ') //this.now.toLocaleDateString(this.local)
     },
     close () {
-      this.now = this.old
+      this.now = new Date(this.val)
       this.show = false
     },
     yearClick (flag) {
@@ -114,8 +169,7 @@ export default {
     pickDate (e) {
       this.show = false
       this.now = e.target.innerText !== '' ? new Date(this.now.getFullYear(), this.now.getMonth(), e.target.innerText) : this.now
-      this.old = this.now
-      this.pickedValue = this.now.toLocaleDateString()
+      this.val = this.format(this.now)//this.now.toISOString().split('.')[0].replace('T', ' ') //this.now.toLocaleDateString(this.local)
     },
     leave (e) {
       if (!this.$el.contains(e.target)) {

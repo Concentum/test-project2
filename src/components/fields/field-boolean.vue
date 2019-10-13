@@ -5,8 +5,8 @@
       <label :for="fieldName">{{ requisite.label }}</label>
     </div> 
     <div v-else :class="['form-control', 'o-length']">
-      <select :id="fieldName" required>
-         <option v-for="(item, i) in items" :value="i">{{item}}</option>
+      <select :id="fieldName" v-model="value">
+         <option v-for="(item, i) in items" :value="items[i]">{{item}}</option>
       </select>
       <label :for="fieldName">{{ requisite.label }}</label>
     </div>  
@@ -24,7 +24,7 @@ export default {
   },
   data () {
     return {
-      items: [null, 'False', 'True']
+      items: [null, false, true]
     }  
   },
   methods: {

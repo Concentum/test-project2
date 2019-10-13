@@ -1,10 +1,8 @@
 <template>
-  <div> <!--
-    <tab-list :slots="['requisites', 'properties']">
-    </tab-list>  
--->
+  <div>
+
     <template v-for="(requisite, key) in requisites">
-      <form-field v-if="formData"
+      <form-field v-bind:key="key"
         :fieldName="key"
         :requisite="requisite"
         :endpoint="endpoint"
@@ -12,7 +10,7 @@
     </template>
 
     <template v-for="(property, key) in properties">
-      <form-field v-if="formData"
+      <form-field v-bind:key="key"
         :fieldName="key"
         :requisite="property"
         :endpoint="endpoint"
@@ -20,12 +18,13 @@
     </template>
 
     <template v-for="(detail, key) in details">
-      <field-grid
+      <field-grid v-bind:key="key"
         :detailName="key"
         :requisites="detail.requisites"
         :endpoint="endpoint"
       />
     </template>
+
     <modal v-if="confirmShow"
       @confirm-cancel="confirmShow=false"
       @confirm-yes="saveElement"
@@ -48,7 +47,6 @@
 <script>
 import common from '../common.js'
 import _ from 'lodash'
-import moment from 'moment'
  
 export default {
   name: 'form-builder',
@@ -64,13 +62,13 @@ export default {
       confirmShow: false
     }
   },
-  computed: {
+  computed: {/*
     formData () {
       let data = this.$store.getters.getData(this.endpoint.key)
       if (data !== undefined) {
         return data
       }
-    }
+    }*/
   },
   methods: {
     saveElement () {
